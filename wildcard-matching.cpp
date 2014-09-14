@@ -1,35 +1,42 @@
-// DOES NOT WORK, Fail the longer test case
 class Solution  {
 public:
-	static const char nil = '\0';
 	bool isMatch(const char *s, const char *p) {
 		// https://oj.leetcode.com/problems/wildcard-matching/
 		//
-		// Implement wildcard pattern matching with support for '?' and '*'.
-		//   '?' Matches any single character.
-		//   '*' Matches any sequence of characters (including the empty sequence).
-		// The matching should cover the entire input string (not partial).
+		// implement wildcard pattern matching with support for '?' and '*'.
+		//   '?' matches any single character.
+		//   '*' matches any sequence of characters (including the empty sequence).
+		// the matching should cover the entire input string (not partial).
 		//
-		if (*p == nil) { return *s == nil; }
-		// now *p is verified not nil, but *s is still not checked yet.
-		// we cannot check *s here for test case like isMatch("", "**");
 
-		if (*p == '*') {
-			if (isMatch(s, p + 1)) { // star matches zero char
-				return true;
+		// Solution: simply record the last star's position to regress when mismatch happens
+		// http://yucoding.blogspot.com/2013/02/leetcode-question-123-wildcard-matching.html
+		//
+		const char *star = NULL;
+		const char *save = s;
+		while (*s != '\0') {
+			if (*p == *s || *p == '?') {
+				s++;
+				p++;
 			}
-			if (*s == nil) { // before doing s+1, check *s first
+			else if (*p == '*') {
+				star = p;
+				save = s;
+				p++;
+			}
+			else if (star != NULL) { // rewind to last star, eat the saved char
+				p = star + 1;
+				save++;
+				s = save;
+			}
+			else {
 				return false;
 			}
-			return isMatch(s + 1, p); // star matches one or more chars
 		}
-		else {
-			return charMatch(*s, *p) 
-				&& isMatch(s + 1, p + 1);
+		while (*p == '*') {
+			p++;
 		}
-	}
-	bool charMatch(char c, char p) {
-		return (p == c) || (p == '?' && c != nil);
+		return (*p == '\0');
 	}
 	void test() {
 		struct TestCase {
@@ -38,6 +45,7 @@ public:
 			bool result;
 		};
 		vector<TestCase> tests = {
+			{ "abbabaaabbabbaababbabbbbbabbbabbbabaaaaababababbbabababaabbababaabbbbbbaaaabababbbaabbbbaabbbbababababbaabbaababaabbbababababbbbaaabbbbbabaaaabbababbbbaababaabbababbbbbababbbabaaaaaaaabbbbbaabaaababaaaabb", "**aa*****ba*a*bb**aa*ab****a*aaaaaa***a*aaaa**bbabb*b*b**aaaaaaaaa*a********ba*bbb***a*ba*bb*bb**a*b*bb", false },
 			{ "aaabbbaabaaaaababaabaaabbabbbbbbbbaabababbabbbaaaaba", "a*******b", false },
 			{ "ab", "a*a*", false },
 			{ "c", "*?*", true },
