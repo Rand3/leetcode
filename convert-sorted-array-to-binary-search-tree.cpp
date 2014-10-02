@@ -19,9 +19,6 @@ public:
 	    // convert nums[begin..end) to tree. Note that end is not included in the array
 	    int size = end - begin;
 	    if (size == 0) { return NULL; }
-	    if (size == 1) {
-	        return new TreeNode(nums[begin]);
-	    }
 	    int middle = begin + size / 2;
 	    TreeNode *root =  new TreeNode(nums[middle]);
 	    root->left = helper(nums, begin, middle);
