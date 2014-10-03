@@ -11,13 +11,26 @@ public:
 		if (rows == 0) { return result; }
 		int cols = (int)matrix[0].size();
 		if (rows == 0) { return result; }
+		// construct height[], where each h is defined as the consecutive 
+		// number of 1's from current row to top row
+		vector<int> height(cols);
 		for (int i = 0; i < rows; i++) {
-			// construct height[], where each h is defined as the consecutive 
-			// number of 1's from current row to top row
-			vector<int> height(cols, 0);
 			for (int j = 0; j < cols; j++) {
-				for (int k = i; k >= 0 && matrix[k][j] == '1'; k--) {
-					height[j]++;
+				if (i == 0) {
+					height[j] = (matrix[i][j] == '1' ? 1 : 0);
+				}
+				else {
+					if (matrix[i][j] == '1') {
+						if (matrix[i - 1][j] == '1') {
+							height[j]++;
+						}
+						else {
+							height[j] = 1;
+						}
+					}
+					else {
+						height[j] = 0;
+					}
 				}
 			}
 			int area = largestRectangleArea(height);
