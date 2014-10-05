@@ -1,5 +1,21 @@
 class Solution {
 public:
+	/* backtrace program using bit-wise operation to speed up calculation.
+	* 'limit' is all '1's.
+	* 'h'  is the bits all the queens vertically projected on a row. If h==limit, then it's done, answer++.
+	* 'r'  is the bits all the queens anti-diagonally projected on a row.
+	* 'l'  is the bits all the queens diagonally projected on a row.
+	* h|r|l  is all the occupied bits. Then pos = limit & (~(h|r|l)) is all the free positions.
+	* p = pos & (-pos)  gives the right most '1'. pos -= p means we will place a queen on this bit
+	*             represented by p.
+	* 'h+p'  means one more queue vertically projected on next row.
+	* '(r+p)<<1'  means one more queue anti-diagonally projected on next row. Because we are
+	*             moving to next row and the projection is skew from right to left, we have to
+	*             shift left one position after moved to next row.
+	* '(l+p)>>1'  means one more queue diagonally projected on next row. Because we are
+	*             moving to next row and the projection is skew from left to right, we have to
+	*             shift right one position after moved to next row.
+	*/
 	int totalNQueens(int n) {
 		// https://oj.leetcode.com/problems/n-queens-ii/
 		//
@@ -8,37 +24,24 @@ public:
 		// such that no two queens attack each other.
 		// Now, instead outputting board configurations, return the total number of distinct solutions.
 
-		this->n = n;
-		path = vector<int>(n); // col position of queens in each row
-		result = 0;
-		help(0);
-		return result;
+		ans = 0;
+		limit = (1 << n) - 1;
+		dfs(0, 0, 0);
+		return ans;
 	}
-	int n;
-	vector<int> path;
-	int result;
-	void help(int step) {
-		if (step == n) {
-			result++;
+	void dfs(int h, int r, int l) {
+		if (h == limit) {
+			ans++;
 			return;
 		}
-		for (int i = 0; i < n; i++) {
-			path[step] = i;
-			if (isValid(step)) {
-				help(step + 1);
-			}
+		int pos = limit & (~(h | r | l));
+		while (pos) {
+			int p = pos & (-pos);
+			pos -= p;
+			dfs(h + p, (r + p) << 1, (l + p) >> 1);
 		}
 	}
-	bool isValid(int step) {
-		int my = path[step];
-		for (int i = 0; i < step; i++) {
-			int you = path[i];
-			if (my == you || step - i == abs(my - you)) {
-				return false;
-			}
-		}
-		return true;
-	}
+	int ans, limit;
 	void test() {
 		int result = totalNQueens(8);
 		cout << "total: " << result << endl;
