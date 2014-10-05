@@ -29,7 +29,7 @@ public:
 		for (int i = 0; i < size; i++) {
 			int x = q.front();
 			q.pop_front();
-			if (i == 0 || x != prev) {
+			if (x != prev) {
 				path[step] = x;
 				help(num, step + 1);
 			}
