@@ -12,45 +12,34 @@ public:
 		//   1 _X*XX*XXXXXX
 		//     010210132121
 
-		if (n <= 2) { return 0; }
 		int left = 0;
 		int right = n - 1;
-		int width = right - left - 1;
-		int height = min(A[left], A[right]);
-		int total = height * width;
-		while (width > 0) {
-			width--;
+		int block = 0; // area of all 'blocks'
+		int all = 0; // sum of 'blocks' and 'waters'
+		int current_level = 0;
+		while (left <= right) {
+			int level = min(A[left], A[right]);
+			if (level > current_level) {
+				all += (level - current_level) * (right - left + 1);
+				current_level = level;
+			}
 			if (A[left] < A[right]) {
+				block += A[left];
 				left++;
-				if (A[left] < height) {
-					total -= A[left];
-				}
-				else {
-					total -= height;
-					int h2 = min(A[left], A[right]);
-					total += (h2 - height) * width;
-					height = h2;
-				}
 			}
 			else {
+				block += A[right];
 				right--;
-				if (A[right] < height) {
-					total -= A[right];
-				}
-				else {
-					total -= height;
-					int h2 = min(A[left], A[right]);
-					total += (h2 - height) * width;
-					height = h2;
-				}
 			}
 		}
-		return total;
+		return all - block;
 	}
 	void test() {
-		int A[] = { 0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1 };
-		int n = sizeof(A) / sizeof(A[0]);
-		int result = trap(A, n);
-		cout << result << endl;
+		int A[] = { 0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1, 0 };
+		int n = sizeof(A) / sizeof(int);
+		for (int i = 0; i < n; i++) {
+			int result = trap(A, i);
+			cout << A[i] << " : " << result << endl;
+		}
 	}
 };
